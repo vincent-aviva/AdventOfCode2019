@@ -44,22 +44,21 @@ namespace AdventOfCode2019
                                     break;
                                 }
 
-                                var ampA = new IntcodeComputer(content, true);
-                                var ampB = new IntcodeComputer(content, true);
-                                var ampC = new IntcodeComputer(content, true);
-                                var ampD = new IntcodeComputer(content, true);
-                                var ampE = new IntcodeComputer(content, true);
-                                ampA.ConnectAmp(ampB);
+                                var ampA = new IntcodeComputer(content, false);
                                 ampA.SetInputValues(a, 0);
-                                ampB.ConnectAmp(ampC);
-                                ampB.SetInputValues(b);
-                                ampC.ConnectAmp(ampD);
-                                ampC.SetInputValues(c);
-                                ampD.ConnectAmp(ampE);
-                                ampD.SetInputValues(d);
-                                ampE.SetInputValues(e);
-
                                 ampA.Run();
+                                var ampB = new IntcodeComputer(content, false);
+                                ampB.SetInputValues(b, ampA._outputValues.Last());
+                                ampB.Run();
+                                var ampC = new IntcodeComputer(content, false);
+                                ampC.SetInputValues(b, ampB._outputValues.Last());
+                                ampC.Run();
+                                var ampD = new IntcodeComputer(content, false);
+                                ampD.SetInputValues(b, ampC._outputValues.Last());
+                                ampD.Run();
+                                var ampE = new IntcodeComputer(content, false);
+                                ampE.SetInputValues(b, ampD._outputValues.Last());
+                                ampE.Run();
 
                                 possibilities.Add(new Amplification { A = a, B = b, C = c, D = d, E = e, Output = ampE._outputValues.Last() });
                             }
@@ -79,33 +78,43 @@ namespace AdventOfCode2019
             //var possibilities = new List<Amplification>();
 
             var content = "3,26,1001,26,-4,26,3,27,1002,27,2,27,1,27,26,27,4,27,1001,28,-1,28,1005,28,6,99,0,0,5";
-            
+
             int a = 9, b = 8, c = 7, d = 6, e = 5;
+            var amplifiers = new List<IntcodeComputer>
+            {
+                new IntcodeComputer(content, true),
+                new IntcodeComputer(content, true),
+                new IntcodeComputer(content, true),
+                new IntcodeComputer(content, true),
+                new IntcodeComputer(content, true)
+            };
 
-            var ampA = new IntcodeComputer(content, true);
-            var ampB = new IntcodeComputer(content, true);
-            var ampC = new IntcodeComputer(content, true);
-            var ampD = new IntcodeComputer(content, true);
-            var ampE = new IntcodeComputer(content, true);
-            ampA.ConnectAmp(ampB);
-            ampA.SetInputValues(a, 0);
-            ampB.ConnectAmp(ampC);
-            ampB.SetInputValues(b);
-            ampC.ConnectAmp(ampD);
-            ampC.SetInputValues(c);
-            ampD.ConnectAmp(ampE);
-            ampD.SetInputValues(d);
-            ampE.ConnectAmp(ampA);
-            ampE.SetInputValues(e);
+            amplifiers[0].SetInputValues(a, 0);
+            amplifiers[1].SetInputValues(b);
+            amplifiers[2].SetInputValues(c);
+            amplifiers[3].SetInputValues(d);
+            amplifiers[4].SetInputValues(e);
 
-            //while (intcodeComputer.lastOperation != 99)
-            //{
+            var ampCounter = 0;
+            while (amplifiers[4].lastOperation != 99)
+            {
+                if (ampCounter != 0)
+                {
+                    amplifiers[ampCounter % 5].SetInputValues(amplifiers[(ampCounter - 1) % 5]._outputValues.Last());
+                }
 
-            ampA.Run();
+                Console.WriteLine($"Starting amplifier {ampCounter % 5} with inputs {string.Join(", ", amplifiers[ampCounter % 5]._inputValues.Select(x => x.ToString()))}");
 
-            Console.WriteLine("aaa");
 
-            //}
+                amplifiers[ampCounter % 5].Run();
+                
+                Console.WriteLine($"Exited with lastOperation {amplifiers[ampCounter % 5].lastOperation} and outputs {string.Join(", ", amplifiers[ampCounter % 5]._outputValues.Select(x => x.ToString()))}");
+                Console.WriteLine();
+                
+                ampCounter++;
+            }
+
+            Console.WriteLine(amplifiers[4]._outputValues.Last()); //139629729
 
             //possibilities.Add(new Amplification { a = a, b = b, c = c, d = d, e = e, output = output });
 

@@ -9,10 +9,9 @@ namespace AdventOfCode2019.Machines
     {
         internal int[] _memory;
         internal List<int> _outputValues;
+        internal List<int> _inputValues;
 
-        private List<int> _inputValues;
         private int _counter;
-        private IntcodeComputer _connectedAmp;
         private bool _runInFeedback;
 
         internal IntcodeComputer(string input, bool runInFeedback)
@@ -30,17 +29,10 @@ namespace AdventOfCode2019.Machines
             _inputValues.AddRange(inputValues);
         }
 
-        internal void ConnectAmp(IntcodeComputer connectedAmp)
-        {
-            _connectedAmp = connectedAmp;
-        }
-        
         internal int lastOperation = 0;
-        private bool breakRun;
 
         internal void Run()
         {
-            breakRun = false;
             var inputValueQuestion = 0;
 
             while (_counter < _memory.Length)
@@ -50,6 +42,11 @@ namespace AdventOfCode2019.Machines
                 if (operationInput == 99)
                 {
                     lastOperation = 99;
+                    if (_runInFeedback)
+                    {
+                        _counter = 0;
+                    }
+
                     break;
                 }
 
@@ -64,132 +61,141 @@ namespace AdventOfCode2019.Machines
                 int value1;
                 int value2;
 
-                switch (lastOperation)
+                if (lastOperation == 1)
                 {
-                    case 1:
-                        #region number1 + number2 -> number3
-                        number1 = _memory[_counter + 1];
-                        value1 = GetValue(number1, positionMode1);
-                        number2 = _memory[_counter + 2];
-                        value2 = GetValue(number2, positionMode2);
-                        position = _memory[_counter + 3];
+                    #region number1 + number2 -> number3
 
-                        _memory[position] = value1 + value2;
-                        _counter += 4;
-                        #endregion
-                        break;
-                    case 2:
-                        #region number1 * number2 -> number3
-                        number1 = _memory[_counter + 1];
-                        value1 = GetValue(number1, positionMode1);
-                        number2 = _memory[_counter + 2];
-                        value2 = GetValue(number2, positionMode2);
-                        position = _memory[_counter + 3];
+                    number1 = _memory[_counter + 1];
+                    value1 = GetValue(number1, positionMode1);
+                    number2 = _memory[_counter + 2];
+                    value2 = GetValue(number2, positionMode2);
+                    position = _memory[_counter + 3];
 
-                        _memory[position] = value1 * value2;
-                        _counter += 4;
-                        #endregion
-                        break;
-                    case 3:
-                        #region Input
-                        if (_inputValues != null && _inputValues.Count() > inputValueQuestion)
-                        {
-                            value1 = _inputValues[inputValueQuestion];
-                            inputValueQuestion++;
-                        }
-                        else if (_runInFeedback)
-                        {
-                            breakRun = true;
-                            break;
-                        }
-                        else
-                        {
-                            Console.WriteLine("Please provide an input value");
-                            value1 = Convert.ToInt32(Console.ReadLine());
-                        }
+                    _memory[position] = value1 + value2;
+                    _counter += 4;
 
-
-                        position = _memory[_counter + 1];
-                        _memory[position] = value1;
-
-                        _counter += 2;
-                        #endregion
-                        break;
-                    case 4:
-                        #region Output
-                        number1 = _memory[_counter + 1];
-                        value1 = GetValue(number1, positionMode1);
-
-                        SendOutput(value1);
-
-                        _counter += 2;
-                        #endregion
-                        break;
-                    case 5:
-                        #region Jump if true
-                        number1 = _memory[_counter + 1];
-                        value1 = GetValue(number1, positionMode1);
-                        number2 = _memory[_counter + 2];
-                        value2 = GetValue(number2, positionMode2);
-
-                        if (value1 != 0)
-                        {
-                            _counter = value2;
-                        }
-                        else
-                        {
-                            _counter += 3;
-                        }
-                        #endregion
-                        break;
-                    case 6:
-                        #region Jump is false
-                        number1 = _memory[_counter + 1];
-                        value1 = GetValue(number1, positionMode1);
-                        number2 = _memory[_counter + 2];
-                        value2 = GetValue(number2, positionMode2);
-
-                        if (value1 == 0)
-                        {
-                            _counter = value2;
-                        }
-                        else
-                        {
-                            _counter += 3;
-                        }
-                        #endregion
-                        break;
-                    case 7:
-                        #region Less then
-                        number1 = _memory[_counter + 1];
-                        value1 = GetValue(number1, positionMode1);
-                        number2 = _memory[_counter + 2];
-                        value2 = GetValue(number2, positionMode2);
-                        position = _memory[_counter + 3];
-
-                        _memory[position] = (value1 < value2 ? 1 : 0);
-                        _counter += 4;
-                        #endregion
-                        break;
-                    case 8:
-                        #region Equals
-                        number1 = _memory[_counter + 1];
-                        value1 = GetValue(number1, positionMode1);
-                        number2 = _memory[_counter + 2];
-                        value2 = GetValue(number2, positionMode2);
-                        position = _memory[_counter + 3];
-
-                        _memory[position] = (value1 == value2 ? 1 : 0);
-                        _counter += 4;
-                        #endregion
-                        break;
-                    default:
-                        Console.WriteLine($"ERROR, wrong operation detected. Operation={lastOperation} counter={_counter}");
-                        break;
+                    #endregion
                 }
-
-                if (breakRun)
+                else if (lastOperation == 2)
                 {
+                    #region number1 * number2 -> number3
+
+                    number1 = _memory[_counter + 1];
+                    value1 = GetValue(number1, positionMode1);
+                    number2 = _memory[_counter + 2];
+                    value2 = GetValue(number2, positionMode2);
+                    position = _memory[_counter + 3];
+
+                    _memory[position] = value1 * value2;
+                    _counter += 4;
+
+                    #endregion
+                }
+                else if (lastOperation == 3)
+                {
+                    #region Input
+
+                    if (_inputValues != null && _inputValues.Count() > inputValueQuestion)
+                    {
+                        value1 = _inputValues[inputValueQuestion];
+                        inputValueQuestion++;
+                    }
+                    else
+                    {
+                        Console.WriteLine("Please provide an input value");
+                        value1 = Convert.ToInt32(Console.ReadLine());
+                    }
+
+
+                    position = _memory[_counter + 1];
+                    _memory[position] = value1;
+
+                    _counter += 2;
+
+                    #endregion
+                }
+                else if (lastOperation == 4)
+                {
+                    #region Output
+                    number1 = _memory[_counter + 1];
+                    value1 = GetValue(number1, positionMode1);
+
+                    SendOutput(value1);
+
+                    _counter += 2;
+                    #endregion
+
+
+                    if (_runInFeedback)
+                    {
+                        break;
+                    }
+                }
+                else if (lastOperation == 5)
+                {
+                    #region Jump if true
+                    number1 = _memory[_counter + 1];
+                    value1 = GetValue(number1, positionMode1);
+                    number2 = _memory[_counter + 2];
+                    value2 = GetValue(number2, positionMode2);
+
+                    if (value1 != 0)
+                    {
+                        _counter = value2;
+                    }
+                    else
+                    {
+                        _counter += 3;
+                    }
+                    #endregion
+                }
+                else if (lastOperation == 6)
+                {
+                    #region Jump is false
+                    number1 = _memory[_counter + 1];
+                    value1 = GetValue(number1, positionMode1);
+                    number2 = _memory[_counter + 2];
+                    value2 = GetValue(number2, positionMode2);
+
+                    if (value1 == 0)
+                    {
+                        _counter = value2;
+                    }
+                    else
+                    {
+                        _counter += 3;
+                    }
+                    #endregion
+                }
+                else if (lastOperation == 7)
+                {
+                    #region Less then
+                    number1 = _memory[_counter + 1];
+                    value1 = GetValue(number1, positionMode1);
+                    number2 = _memory[_counter + 2];
+                    value2 = GetValue(number2, positionMode2);
+                    position = _memory[_counter + 3];
+
+                    _memory[position] = (value1 < value2 ? 1 : 0);
+                    _counter += 4;
+                    #endregion
+                }
+                else if (lastOperation == 8)
+                {
+                    #region Equals
+                    number1 = _memory[_counter + 1];
+                    value1 = GetValue(number1, positionMode1);
+                    number2 = _memory[_counter + 2];
+                    value2 = GetValue(number2, positionMode2);
+                    position = _memory[_counter + 3];
+
+                    _memory[position] = (value1 == value2 ? 1 : 0);
+                    _counter += 4;
+                    #endregion
+                }
+                else
+                {
+                    Console.WriteLine($"ERROR, wrong operation detected. Operation={lastOperation} counter={_counter}");
                     break;
                 }
             }
@@ -211,10 +217,6 @@ namespace AdventOfCode2019.Machines
         internal void SendOutput(int value)
         {
             _outputValues.Add(value);
-            if (_connectedAmp != null)
-            {
-                _connectedAmp.ReceiveInput(value);
-            }
         }
 
         internal void ReceiveInput(int value)
