@@ -44,23 +44,23 @@ namespace AdventOfCode2019
                                     break;
                                 }
 
-                                var ampA = new IntcodeComputer(content, false);
+                                var ampA = new IntComputer(content, false);
                                 ampA.SetInputValues(a, 0);
                                 ampA.Run();
-                                var ampB = new IntcodeComputer(content, false);
-                                ampB.SetInputValues(b, ampA._outputValues.Last());
+                                var ampB = new IntComputer(content, false);
+                                ampB.SetInputValues(b, ampA.LastOutput);
                                 ampB.Run();
-                                var ampC = new IntcodeComputer(content, false);
-                                ampC.SetInputValues(b, ampB._outputValues.Last());
+                                var ampC = new IntComputer(content, false);
+                                ampC.SetInputValues(b, ampB.LastOutput);
                                 ampC.Run();
-                                var ampD = new IntcodeComputer(content, false);
-                                ampD.SetInputValues(b, ampC._outputValues.Last());
+                                var ampD = new IntComputer(content, false);
+                                ampD.SetInputValues(b, ampC.LastOutput);
                                 ampD.Run();
-                                var ampE = new IntcodeComputer(content, false);
-                                ampE.SetInputValues(b, ampD._outputValues.Last());
+                                var ampE = new IntComputer(content, false);
+                                ampE.SetInputValues(b, ampD.LastOutput);
                                 ampE.Run();
 
-                                possibilities.Add(new Amplification { A = a, B = b, C = c, D = d, E = e, Output = ampE._outputValues.Last() });
+                                possibilities.Add(new Amplification { A = a, B = b, C = c, D = d, E = e, Output = ampE.LastOutput });
                             }
                         }
                     }
@@ -68,76 +68,26 @@ namespace AdventOfCode2019
             }
 
             var highestOutput = possibilities.First(x => x.Output == possibilities.Max(y => y.Output));
-            Console.WriteLine($"Highest output {highestOutput.Output}");
+            Console.WriteLine($"Configuration {highestOutput.A}{highestOutput.B}{highestOutput.C}{highestOutput.D}{highestOutput.E} gives the highest output of {highestOutput.Output}");
         }
 
-        public bool IsPart2Complete => false;
+        public bool IsPart2Complete => true;
 
         public void DoAction2()
         {
-            //var possibilities = new List<Amplification>();
-
-            var content = "3,26,1001,26,-4,26,3,27,1002,27,2,27,1,27,26,27,4,27,1001,28,-1,28,1005,28,6,99,0,0,5";
-
-            int a = 9, b = 8, c = 7, d = 6, e = 5;
-            var amplifiers = new List<IntcodeComputer>
-            {
-                new IntcodeComputer(content, true),
-                new IntcodeComputer(content, true),
-                new IntcodeComputer(content, true),
-                new IntcodeComputer(content, true),
-                new IntcodeComputer(content, true)
-            };
-
-            amplifiers[0].SetInputValues(a, 0);
-            amplifiers[1].SetInputValues(b);
-            amplifiers[2].SetInputValues(c);
-            amplifiers[3].SetInputValues(d);
-            amplifiers[4].SetInputValues(e);
-
-            var ampCounter = 0;
-            while (amplifiers[4].lastOperation != 99)
-            {
-                if (ampCounter != 0)
-                {
-                    amplifiers[ampCounter % 5].SetInputValues(amplifiers[(ampCounter - 1) % 5]._outputValues.Last());
-                }
-
-                Console.WriteLine($"Starting amplifier {ampCounter % 5} with inputs {string.Join(", ", amplifiers[ampCounter % 5]._inputValues.Select(x => x.ToString()))}");
-
-
-                amplifiers[ampCounter % 5].Run();
-                
-                Console.WriteLine($"Exited with lastOperation {amplifiers[ampCounter % 5].lastOperation} and outputs {string.Join(", ", amplifiers[ampCounter % 5]._outputValues.Select(x => x.ToString()))}");
-                Console.WriteLine();
-                
-                ampCounter++;
-            }
-
-            Console.WriteLine(amplifiers[4]._outputValues.Last()); //139629729
-
-            //possibilities.Add(new Amplification { a = a, b = b, c = c, d = d, e = e, output = output });
-
-            /*
-            Console.WriteLine("Reading file");
-
-            var fileReader = new StreamReader("./Input/Day07.txt");
-            var content = fileReader.ReadToEnd();
-            
-            var arr = content.Split(new[] { ',' }, StringSplitOptions.None).Select(x => Convert.ToInt32(x))
-                .ToArray();
-
             var possibilities = new List<Amplification>();
 
-            for (int a = 5;a < 10;a++)
+            var content = ReadFile();
+
+            for (int a = 5; a < 10; a++)
             {
-                for (int b = 5;b < 10;b++)
+                for (int b = 5; b < 10; b++)
                 {
-                    for (int c = 5;c < 10;c++)
+                    for (int c = 5; c < 10; c++)
                     {
-                        for (int d = 5;d < 10;d++)
+                        for (int d = 5; d < 10; d++)
                         {
-                            for (int e = 5;e < 10;e++)
+                            for (int e = 5; e < 10; e++)
                             {
                                 if (a == b || a == c || a == d || a == e ||
                                     b == c || b == d || b == e ||
@@ -147,25 +97,44 @@ namespace AdventOfCode2019
                                     break;
                                 }
 
-                                while (intcodeComputer.lastOperation != 99)
+                                var amplifiers = new List<IntComputer>
                                 {
-                                    intcodeComputer.Process(arr, new List<int> {a, intcodeComputer.output});
-                                    intcodeComputer.Process(arr, new List<int> {b, intcodeComputer.output});
-                                    intcodeComputer.Process(arr, new List<int> {c, intcodeComputer.output});
-                                    intcodeComputer.Process(arr, new List<int> {d, intcodeComputer.output});
-                                    intcodeComputer.Process(arr, new List<int> {e, intcodeComputer.output});
+                                    new IntComputer(content, true),
+                                    new IntComputer(content, true),
+                                    new IntComputer(content, true),
+                                    new IntComputer(content, true),
+                                    new IntComputer(content, true)
+                                };
+
+                                amplifiers[0].SetInputValues(a, 0);
+                                amplifiers[1].SetInputValues(b);
+                                amplifiers[2].SetInputValues(c);
+                                amplifiers[3].SetInputValues(d);
+                                amplifiers[4].SetInputValues(e);
+
+                                var ampCounter = 0;
+                                while (amplifiers[4].LastOperation != 99)
+                                {
+                                    if (ampCounter != 0)
+                                    {
+                                        amplifiers[ampCounter % 5]
+                                            .SetInputValues(amplifiers[(ampCounter - 1) % 5].LastOutput);
+                                    }
+
+                                    amplifiers[ampCounter % 5].Run();
+
+                                    ampCounter++;
                                 }
 
-                                possibilities.Add(new Amplification { a = a, b = b, c = c, d = d, e = e, output = intcodeComputer.output });
+                                possibilities.Add(new Amplification { A = a, B = b, C = c, D = d, E = e, Output = amplifiers[4].LastOutput });
                             }
                         }
                     }
                 }
             }
-            */
 
-            //var highestOutput = possibilities.First(x => x.output == possibilities.Max(y => y.output));
-            //Console.WriteLine($"{highestOutput.a}{highestOutput.b}{highestOutput.c}{highestOutput.d}{highestOutput.e} gives output {highestOutput.output}");
+            var highestOutput = possibilities.First(x => x.Output == possibilities.Max(y => y.Output));
+            Console.WriteLine($"Configuration {highestOutput.A}{highestOutput.B}{highestOutput.C}{highestOutput.D}{highestOutput.E} gives the highest output of {highestOutput.Output}");
         }
     }
 

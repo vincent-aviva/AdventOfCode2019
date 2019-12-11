@@ -19,12 +19,12 @@ namespace AdventOfCode2019
         {
             var content = ReadFile();
             
-            var intComputer = new IntcodeComputer(content, false);
-            intComputer._memory[1] = 12;
-            intComputer._memory[2] = 2;
+            var intComputer = new IntComputer(content, false);
+            intComputer.Memory[1] = 12;
+            intComputer.Memory[2] = 2;
             intComputer.Run();
 
-            Console.WriteLine($"Output {intComputer._memory[0]}");
+            Console.WriteLine($"Output {intComputer.Memory[0]}");
         }
 
         public bool IsPart2Complete => true;
@@ -38,14 +38,14 @@ namespace AdventOfCode2019
             {
                 for (var b = 0;b < loopLength;b++)
                 {
-                    var intComputer = new IntcodeComputer(content, false);
-                    intComputer._memory[1] = a;
-                    intComputer._memory[2] = b;
+                    var intComputer = new IntComputer(content, false);
+                    intComputer.Memory[1] = a;
+                    intComputer.Memory[2] = b;
                     intComputer.Run();
 
-                    if (intComputer._memory[0] == 19690720)
+                    if (intComputer.Memory[0] == 19690720)
                     {
-                        Console.WriteLine($"Output {intComputer._memory[0]} for Noun {a} and Verb {b}");
+                        Console.WriteLine($"Output {intComputer.Memory[0]} for Noun {a} and Verb {b}");
                         a = loopLength;
                         b = loopLength;
                     }

@@ -18,11 +18,11 @@ namespace AdventOfCode2019
             var fileReader = new StreamReader("./Input/Day05.txt");
             var content = fileReader.ReadToEnd();
             
-            var intcodeComputer = new IntcodeComputer(content, false);
+            var intcodeComputer = new IntComputer(content, false);
             intcodeComputer.SetInputValues(1);
             intcodeComputer.Run();
 
-            Console.WriteLine(intcodeComputer._outputValues.First(x => x != 0));
+            Console.WriteLine(intcodeComputer.OutputValues.First(x => x != 0));
         }
 
         public bool IsPart2Complete => true;
@@ -34,11 +34,11 @@ namespace AdventOfCode2019
             var fileReader = new StreamReader("./Input/Day05.txt");
             var content = fileReader.ReadToEnd();
             
-            var intcodeComputer = new IntcodeComputer(content, false);
+            var intcodeComputer = new IntComputer(content, false);
             intcodeComputer.SetInputValues(1);
             intcodeComputer.Run();
 
-            Console.WriteLine(intcodeComputer._outputValues.First(x => x != 0));
+            Console.WriteLine(intcodeComputer.OutputValues.First(x => x != 0));
         }
     }
 }
