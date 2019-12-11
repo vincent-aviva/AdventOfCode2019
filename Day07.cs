@@ -145,6 +145,6 @@ namespace AdventOfCode2019
         public int C { get; set; }
         public int D { get; set; }
         public int E { get; set; }
-        public int Output { get; set; }
+        public long Output { get; set; }
     }
 }

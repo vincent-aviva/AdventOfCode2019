@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace AdventOfCode2019.Helpers
 {
     public static class IntExtensions
     {
-        public static int[] GetIntArray(this int num, bool reverse)
+        public static int[] GetIntArray(this int num)
         {
             var listOfInts = new List<int>();
             while (num > 0)
@@ -17,11 +13,8 @@ namespace AdventOfCode2019.Helpers
                 num = num / 10;
             }
 
-            if (reverse)
-            {
-                listOfInts.Reverse();
-            }
-
+            listOfInts.Reverse();
+            
             return listOfInts.ToArray();
         }
     }

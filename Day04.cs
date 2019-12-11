@@ -38,7 +38,7 @@ namespace AdventOfCode2019
         {
             var foundDouble = false;
             var skippedDigits = new List<int>();
-            var digits = input.GetIntArray(true);
+            var digits = input.GetIntArray();
 
             for (var i = 1 ; i < digits.Length ; i++)
             {

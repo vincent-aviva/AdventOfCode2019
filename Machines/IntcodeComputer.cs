@@ -1,33 +1,39 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using AdventOfCode2019.Helpers;
 
 namespace AdventOfCode2019.Machines
 {
     internal class IntComputer
     {
-        private readonly List<int> _inputValues;
-        private int _memoryPosition;
-        private int inputValuePosition;
+        private readonly List<long> _inputValues;
+        private long _memoryPosition;
+        private int _inputValuePosition;
         private readonly bool _breakOnOutput;
+        private long _relativeBase;
 
-        internal int[] Memory { get; }
-        internal int LastOperation { get; private set; }
-        internal List<int> OutputValues { get; }
+        internal long[] Memory { get; }
+        internal long LastOperation { get; private set; }
+        internal List<long> OutputValues { get; }
 
         internal IntComputer(string input, bool breakOnOutput)
         {
-            Memory = input.Split(new[] { ',' }, StringSplitOptions.None).Select(x => Convert.ToInt32(x)).ToArray();
+            Memory = new long[10000];
+            var inputArr = input.Split(new[] { ',' }, StringSplitOptions.None).Select(x => Convert.ToInt64(x)).ToArray();
+            for (int i = 0; i < 10000; i++)
+            {
+                Memory[i] = inputArr.Length > i ? inputArr[i] : 0;
+            }
+
             _breakOnOutput = breakOnOutput;
 
             _memoryPosition = 0;
-            inputValuePosition = 0;
-            _inputValues = new List<int>();
-            OutputValues = new List<int>();
+            _inputValuePosition = 0;
+            _inputValues = new List<long>();
+            OutputValues = new List<long>();
         }
 
-        internal void SetInputValues(params int[] inputValues)
+        internal void SetInputValues(params long[] inputValues)
         {
             _inputValues.AddRange(inputValues);
         }
@@ -36,57 +42,52 @@ namespace AdventOfCode2019.Machines
         {
             while (_memoryPosition < Memory.Length)
             {
-                var operationInput = Memory[_memoryPosition];
+                var operationInput = Convert.ToInt32(Memory[_memoryPosition]);
 
-                var operationDigits = operationInput.GetIntArray(false);
-                LastOperation = operationDigits.Length == 1 ? operationDigits[0] : operationDigits[1] * 10 + operationDigits[0];
-                var positionMode1 = operationDigits.Length > 2 ? operationDigits[2] : 0;
-                var positionMode2 = operationDigits.Length > 3 ? operationDigits[3] : 0;
+                LastOperation = operationInput % 100;
+                var positionMode1 = (NumberMode)((operationInput / 100) % 10);
+                var positionMode2 = (NumberMode)((operationInput / 1000) % 10);
+                var positionMode3 = (NumberMode)((operationInput / 10000) % 10);
 
-                int number1;
-                int number2;
-                int position;
-                int value1;
-                int value2;
+                long number1;
+                long number2;
+                long position;
+                long value1;
+                long value2;
 
                 if (LastOperation == 1)
                 {
                     #region number1 + number2 -> number3
-
                     number1 = Memory[_memoryPosition + 1];
                     value1 = GetValue(number1, positionMode1);
                     number2 = Memory[_memoryPosition + 2];
                     value2 = GetValue(number2, positionMode2);
                     position = Memory[_memoryPosition + 3];
 
-                    Memory[position] = value1 + value2;
+                    SetValue(position, positionMode3, value1 + value2);
                     _memoryPosition += 4;
-
                     #endregion
                 }
                 else if (LastOperation == 2)
                 {
                     #region number1 * number2 -> number3
-
                     number1 = Memory[_memoryPosition + 1];
                     value1 = GetValue(number1, positionMode1);
                     number2 = Memory[_memoryPosition + 2];
                     value2 = GetValue(number2, positionMode2);
                     position = Memory[_memoryPosition + 3];
 
-                    Memory[position] = value1 * value2;
+                    SetValue(position, positionMode3, value1 * value2);
                     _memoryPosition += 4;
-
                     #endregion
                 }
                 else if (LastOperation == 3)
                 {
                     #region Input
-
-                    if (_inputValues != null && _inputValues.Count > inputValuePosition)
+                    if (_inputValues != null && _inputValues.Count > _inputValuePosition)
                     {
-                        value1 = _inputValues[inputValuePosition];
-                        inputValuePosition++;
+                        value1 = _inputValues[_inputValuePosition];
+                        _inputValuePosition++;
                     }
                     else
                     {
@@ -94,12 +95,10 @@ namespace AdventOfCode2019.Machines
                         value1 = Convert.ToInt32(Console.ReadLine());
                     }
 
-
                     position = Memory[_memoryPosition + 1];
-                    Memory[position] = value1;
+                    SetValue(position, positionMode1, value1);
 
                     _memoryPosition += 2;
-
                     #endregion
                 }
                 else if (LastOperation == 4)
@@ -112,7 +111,7 @@ namespace AdventOfCode2019.Machines
 
                     _memoryPosition += 2;
                     #endregion
-                    
+
                     if (_breakOnOutput)
                     {
                         break;
@@ -163,7 +162,7 @@ namespace AdventOfCode2019.Machines
                     value2 = GetValue(number2, positionMode2);
                     position = Memory[_memoryPosition + 3];
 
-                    Memory[position] = (value1 < value2 ? 1 : 0);
+                    SetValue(position, positionMode3, (value1 < value2 ? 1 : 0));
                     _memoryPosition += 4;
                     #endregion
                 }
@@ -176,8 +175,19 @@ namespace AdventOfCode2019.Machines
                     value2 = GetValue(number2, positionMode2);
                     position = Memory[_memoryPosition + 3];
 
-                    Memory[position] = (value1 == value2 ? 1 : 0);
+                    SetValue(position, positionMode3, (value1 == value2 ? 1 : 0));
                     _memoryPosition += 4;
+                    #endregion
+                }
+                else if (LastOperation == 9)
+                {
+                    #region Adjust relative base
+                    number1 = Memory[_memoryPosition + 1];
+                    value1 = GetValue(number1, positionMode1);
+
+                    _relativeBase += value1;
+
+                    _memoryPosition += 2;
                     #endregion
                 }
                 else if (LastOperation == 99)
@@ -192,25 +202,47 @@ namespace AdventOfCode2019.Machines
             }
         }
 
-        private int GetValue(int number, int mode)
+        private long GetValue(long number, NumberMode mode)
         {
             switch (mode)
             {
-                case 0: //Number is position in Array
+                case NumberMode.Position:
                     return Memory[number];
-                case 1: //Number is value
+                case NumberMode.Value:
                     return number;
+                case NumberMode.Relative:
+                    return Memory[number + _relativeBase];
             }
 
             return 0;
         }
 
-        internal int LastOutput => OutputValues.Last();
+        private void SetValue(long position, NumberMode mode, long value)
+        {
+            switch (mode)
+            {
+                case NumberMode.Position:
+                    Memory[position] = value;
+                    break;
+                case NumberMode.Relative:
+                    Memory[position + _relativeBase] = value;
+                    break;
+            }
+        }
+
+        internal long LastOutput => OutputValues.Last();
 
         internal string AllInputValues => string.Join(", ", _inputValues.Select(x => x.ToString()));
 
         internal string AllOutputValues => string.Join(", ", OutputValues.Select(x => x.ToString()));
 
         internal string FullMemory => string.Join(", ", Memory.Select(x => x.ToString()));
+    }
+
+    internal enum NumberMode
+    {
+        Position = 0,
+        Value = 1,
+        Relative = 2
     }
 }

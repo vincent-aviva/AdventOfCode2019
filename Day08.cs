@@ -15,7 +15,7 @@ namespace AdventOfCode2019
 
         public bool IsImplemented => true;
 
-        public bool IsPart1Complete => false;
+        public bool IsPart1Complete => true;
 
         public void DoAction1()
         {
@@ -30,7 +30,7 @@ namespace AdventOfCode2019
             Console.WriteLine($"Checking space image isn't corrupted. The output is {output}");
         }
 
-        public bool IsPart2Complete => false;
+        public bool IsPart2Complete => true;
 
         public void DoAction2()
         {
