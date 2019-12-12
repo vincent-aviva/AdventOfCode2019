@@ -80,9 +80,9 @@ namespace AdventOfCode2019
             return intersections.Min(x => x);
         }
 
-        private List<Point> CalculatePath(string command)
+        private List<WirePoint> CalculatePath(string command)
         {
-            var paths = new List<Point>();
+            var paths = new List<WirePoint>();
             var instructions = command.Split(new[] { ',' }, StringSplitOptions.None);
 
             int x = 0, y = 0;
@@ -110,7 +110,7 @@ namespace AdventOfCode2019
                             y -= 1;
                             break;
                     }
-                    paths.Add(new Point { X = x, Y = y, Steps = counter });
+                    paths.Add(new WirePoint { X = x, Y = y, Steps = counter });
                 }
             }
 
@@ -118,7 +118,7 @@ namespace AdventOfCode2019
         }
     }
 
-    internal class Point
+    internal class WirePoint
     {
         public int X { get; set; }
         public int Y { get; set; }

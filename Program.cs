@@ -16,7 +16,7 @@ namespace AdventOfCode2019
                     Console.WriteLine($"Running {day} - Part 1.");
                     day.DoAction1();
                 }
-                if (day.IsImplemented && !day.IsPart2Complete)
+                if (day.IsImplemented && day.IsPart1Complete && !day.IsPart2Complete)
                 {
                     Console.WriteLine($"Running {day} - Part 2.");
                     day.DoAction2();
