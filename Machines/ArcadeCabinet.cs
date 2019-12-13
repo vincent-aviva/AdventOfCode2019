@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Xml;
 
 namespace AdventOfCode2019.Machines
 {
@@ -10,7 +9,6 @@ namespace AdventOfCode2019.Machines
     {
         private readonly IntComputer _brain;
         private readonly Dictionary<Point, TileType> _tiles;
-        private Point previousBallPosition;
 
         internal ArcadeCabinet(string input)
         {
@@ -27,6 +25,7 @@ namespace AdventOfCode2019.Machines
         internal void Run()
         {
             Console.Clear();
+            Console.CursorVisible = false;
 
             long x, y, output;
             while (_brain.LastOperation != 99)
@@ -51,11 +50,10 @@ namespace AdventOfCode2019.Machines
                         CreateTile(x, y, output);
                     }
                 }
-
-                System.Threading.Thread.Sleep(1);
             }
 
             Console.SetCursorPosition(0, _tiles.Keys.Max(key => key.Y) + 4);
+            Console.CursorVisible = true;
         }
 
         private void CreateTile(long x, long y, long tileId)
@@ -80,10 +78,10 @@ namespace AdventOfCode2019.Machines
                     Console.Write("■");
                     break;
                 case TileType.Block:
-                    Console.Write("o");
+                    Console.Write("x");
                     break;
                 case TileType.HorizontalPaddle:
-                    Console.Write("-");
+                    Console.Write("_");
                     break;
                 case TileType.Ball:
                     Console.Write(".");
