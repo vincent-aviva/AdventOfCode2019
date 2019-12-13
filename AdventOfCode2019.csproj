@@ -71,7 +71,9 @@
     <Compile Include="Day02.cs" />
     <Compile Include="Helpers\IntExtensions.cs" />
     <Compile Include="IDay.cs" />
+    <Compile Include="Machines\ArcadeCabinet.cs" />
     <Compile Include="Machines\EmergencyHullPaintingRobot.cs" />
+    <Compile Include="Machines\IInputControl.cs" />
     <Compile Include="Machines\IntcodeComputer.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -96,6 +98,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Input\Day07.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Input\Day13.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Input\Day11.txt">

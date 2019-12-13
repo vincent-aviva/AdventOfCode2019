@@ -10,7 +10,12 @@ namespace AdventOfCode2019
 
         public void DoAction1()
         {
-            throw new NotImplementedException();
+            /*
+<x=-6, y=-5, z=-8>
+<x=0, y=-3, z=-13>
+<x=-15, y=10, z=-11>
+<x=-3, y=-8, z=3>
+             */
         }
 
         public bool IsPart2Complete => false;

@@ -11,6 +11,7 @@ namespace AdventOfCode2019.Machines
         private int _inputValuePosition;
         private readonly bool _breakOnOutput;
         private long _relativeBase;
+        private IInputControl _inputControl;
 
         internal long[] Memory { get; }
         internal long LastOperation { get; private set; }
@@ -31,6 +32,11 @@ namespace AdventOfCode2019.Machines
             _inputValuePosition = 0;
             _inputValues = new List<long>();
             OutputValues = new List<long>();
+        }
+
+        internal void SetInputControl(IInputControl inputControl)
+        {
+            _inputControl = inputControl;
         }
 
         internal void SetInputValues(params long[] inputValues)
@@ -89,10 +95,15 @@ namespace AdventOfCode2019.Machines
                         value1 = _inputValues[_inputValuePosition];
                         _inputValuePosition++;
                     }
+                    else if (_inputControl != null)
+                    {
+                        value1 = _inputControl.GetInput();
+                    }
                     else
                     {
                         Console.WriteLine("Please provide an input value");
-                        value1 = Convert.ToInt32(Console.ReadLine());
+                        var input = Console.ReadLine();
+                        value1 = Convert.ToInt32(input);
                     }
 
                     position = Memory[_memoryPosition + 1];
