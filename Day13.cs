@@ -21,7 +21,7 @@ namespace AdventOfCode2019
             var arcade = new ArcadeCabinet(ReadFile());
             arcade.Run();
 
-            var blockCount = arcade.GetCount(TileType.Block);
+            var blockCount = arcade.GetCount(ArcadeCabinet.TileType.Block);
             Console.WriteLine($"At the end there are {blockCount} blocks");
         }
 

@@ -75,6 +75,7 @@
     <Compile Include="Machines\EmergencyHullPaintingRobot.cs" />
     <Compile Include="Machines\IInputControl.cs" />
     <Compile Include="Machines\IntcodeComputer.cs" />
+    <Compile Include="Machines\RepairDroid.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -98,6 +99,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Input\Day07.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Input\Day15.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Input\Day14.txt">
